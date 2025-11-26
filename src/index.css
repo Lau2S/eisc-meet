@@ -22,28 +22,28 @@ nav {
 
 nav,
 footer {
-  @apply flex gap-8 bg-purple-900 justify-center p-4 text-lg;
+  @apply flex gap-8 bg-blue-900 justify-center p-4 text-lg;
 }
 
 button {
-  @apply bg-purple-700 text-white py-2 p-2 rounded hover:bg-purple-800 w-48 text-lg cursor-pointer;
+  @apply bg-blue-700 text-white py-2 p-2 rounded hover:bg-blue-800 w-48 text-lg cursor-pointer;
 }
 
 h1 {
   @apply text-3xl font-bold text-center mb-12;
-  @apply bg-gradient-to-r from-violet-600 to-purple-600;
+  @apply bg-gradient-to-r from-blue-600 to-blue-600;
   @apply bg-clip-text text-transparent;
 }
 
 h2 {
   @apply text-2xl font-bold text-center mb-12;
-  @apply bg-gradient-to-r from-violet-300 to-purple-300;
+  @apply bg-gradient-to-r from-blue-300 to-blue-300;
   @apply bg-clip-text text-transparent;
 }
 
 .container-page {
   @apply min-h-screen flex items-center justify-center p-4;
-  @apply bg-gradient-to-br from-violet-50 to-purple-50 dark:from-gray-900 dark:to-gray-800;
+  @apply bg-gradient-to-br from-blue-50 to-blue-50 dark:from-gray-900 dark:to-gray-800;
 }
 
 .container-page > div {
@@ -59,11 +59,11 @@ h2 {
 
 .container-page > div > div:last-child > button {
   @apply w-full mt-1 flex items-center justify-center gap-3;
-  @apply bg-violet-600 hover:bg-violet-700 active:bg-violet-800;
+  @apply bg-blue-600 hover:bg-violet-700 active:bg-blue-800;
   @apply text-white shadow-lg hover:shadow-xl;
   @apply transition-all duration-200 ease-in-out;
   @apply transform hover:scale-105 active:scale-95;
-  @apply focus:outline-none focus:ring-4 focus:ring-violet-300 focus:ring-offset-2;
+  @apply focus:outline-none focus:ring-4 focus:ring-blue-300 focus:ring-offset-2;
 }
 
 .container-page > div > div:last-child > button img {

@@ -13,6 +13,7 @@ const Chat: React.FC = () => {
   );
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [messageDraft, setMessageDraft] = useState("");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     socket.emit("newUser", usernameRef.current);
@@ -29,6 +30,10 @@ const Chat: React.FC = () => {
       socket.off("chat:message", handleIncomingMessage);
     };
   }, []);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
   const handleSendMessage = (event: React.FormEvent) => {
     event.preventDefault();
@@ -47,8 +52,8 @@ const Chat: React.FC = () => {
   };
 
   return (
-    <div className="container-page">
-      <div className="flex flex-col gap-4 w-full">
+    <div className="w-full h-full bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 border border-gray-200 dark:border-gray-700">
+      <div className="flex flex-col gap-4 w-full h-full">
         <h1>EISC Meet</h1>
         <div className="w-full h-64 rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-3 text-sm overflow-y-auto flex flex-col gap-3">
           {messages.length === 0 ? (
@@ -71,7 +76,7 @@ const Chat: React.FC = () => {
                   <div
                     className={`max-w-[75%] rounded-lg px-3 py-2 text-sm ${
                       isOwn
-                        ? "bg-purple-600 text-white text-right"
+                        ? "bg-blue-600 text-white text-right"
                         : "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                     }`}
                   >
@@ -86,6 +91,7 @@ const Chat: React.FC = () => {
               );
             })
           )}
+          <div ref={messagesEndRef} />
         </div>
 
         <form
@@ -93,7 +99,7 @@ const Chat: React.FC = () => {
           className="flex flex-col sm:flex-row gap-2 w-full"
         >
           <input
-            className="flex-1 rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400"
+            className="flex-1 rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-2 text-sm text-gray-900! dark:text-white! focus:outline-none focus:ring-2 focus:ring-blue-400"
             placeholder="Escribe tu mensaje aquí"
             value={messageDraft}
             onChange={event => setMessageDraft(event.target.value)}

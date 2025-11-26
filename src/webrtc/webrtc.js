@@ -20,6 +20,7 @@ export const initWebRTC = async () => {
   if (Peer.WEBRTC_SUPPORT) {
     try {
       localMediaStream = await getMedia();
+      createLocalVideoElement();
       initSocketConnection();
     } catch (error) {
       console.error("Failed to initialize WebRTC connection:", error);
@@ -30,14 +31,14 @@ export const initWebRTC = async () => {
 };
 
 /**
- * Gets the user's media stream (audio only).
+ * Gets the user's media stream (audio and video).
  * @async
  * @function getMedia
  * @returns {Promise<MediaStream>} The user's media stream.
  */
 async function getMedia() {
   try {
-    return await navigator.mediaDevices.getUserMedia({ audio: true });
+    return await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
   } catch (err) {
     console.error("Failed to get user media:", err);
     throw err;
@@ -87,7 +88,7 @@ function handleNewUserConnected(theirId) {
  */
 function handleUserDisconnected(_id) {
   if (_id !== socket.id) {
-    removeClientAudioElement(_id);
+    removeClientVideoElement(_id);
     delete peers[_id];
   }
 }
@@ -199,19 +200,65 @@ export function enableOutgoingStream() {
 }
 
 /**
+ * Disables the outgoing audio stream.
+ * @function disableOutgoingAudio
+ */
+export function disableOutgoingAudio() {
+  localMediaStream.getAudioTracks().forEach((track) => {
+    track.enabled = false;
+  });
+}
+
+/**
+ * Enables the outgoing audio stream.
+ * @function enableOutgoingAudio
+ */
+export function enableOutgoingAudio() {
+  localMediaStream.getAudioTracks().forEach((track) => {
+    track.enabled = true;
+  });
+}
+
+/**
+ * Disables the outgoing video stream.
+ * @function disableOutgoingVideo
+ */
+export function disableOutgoingVideo() {
+  localMediaStream.getVideoTracks().forEach((track) => {
+    track.enabled = false;
+  });
+}
+
+/**
+ * Enables the outgoing video stream.
+ * @function enableOutgoingVideo
+ */
+export function enableOutgoingVideo() {
+  localMediaStream.getVideoTracks().forEach((track) => {
+    track.enabled = true;
+  });
+}
+
+/**
  * Creates media elements for a client.
  * @function createClientMediaElements
  * @param {string} _id - The ID of the client.
  */
 function createClientMediaElements(_id) {
-  const audioEl = document.createElement("audio");
-  audioEl.id = `${_id}_audio`;
-  audioEl.controls = false;
-  audioEl.volume = 1;
-  document.body.appendChild(audioEl);
+  const videoEl = document.createElement("video");
+  videoEl.id = `${_id}_video`;
+  videoEl.controls = false;
+  videoEl.volume = 1;
+  videoEl.autoplay = true;
+  videoEl.style.width = "100%";
+  videoEl.style.height = "auto";
+  const container = document.getElementById("video-container");
+  if (container) {
+    container.appendChild(videoEl);
+  }
 
-  audioEl.addEventListener("loadeddata", () => {
-    audioEl.play();
+  videoEl.addEventListener("loadeddata", () => {
+    videoEl.play();
   });
 }
 
@@ -222,20 +269,44 @@ function createClientMediaElements(_id) {
  * @param {MediaStream} stream - The new media stream.
  */
 function updateClientMediaElements(_id, stream) {
-  const audioEl = document.getElementById(`${_id}_audio`);
-  if (audioEl) {
-    audioEl.srcObject = new MediaStream([stream.getAudioTracks()[0]]);
+  const videoEl = document.getElementById(`${_id}_video`);
+  if (videoEl) {
+    videoEl.srcObject = stream;
   }
 }
 
 /**
  * Removes media elements for a client.
- * @function removeClientAudioElement
+ * @function removeClientVideoElement
  * @param {string} _id - The ID of the client.
  */
-function removeClientAudioElement(_id) {
-  const audioEl = document.getElementById(`${_id}_audio`);
-  if (audioEl) {
-    audioEl.remove();
+function removeClientVideoElement(_id) {
+  const videoEl = document.getElementById(`${_id}_video`);
+  if (videoEl) {
+    videoEl.remove();
   }
+}
+
+/**
+ * Creates the local video element.
+ * @function createLocalVideoElement
+ */
+function createLocalVideoElement() {
+  const videoEl = document.createElement("video");
+  videoEl.id = "local_video";
+  videoEl.controls = false;
+  videoEl.volume = 1;
+  videoEl.autoplay = true;
+  videoEl.muted = true; // Muted to avoid feedback
+  videoEl.style.width = "100%";
+  videoEl.style.height = "auto";
+  videoEl.srcObject = localMediaStream;
+  const container = document.getElementById("video-container");
+  if (container) {
+    container.appendChild(videoEl);
+  }
+
+  videoEl.addEventListener("loadeddata", () => {
+    videoEl.play();
+  });
 }
